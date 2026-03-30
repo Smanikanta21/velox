@@ -36,9 +36,10 @@ int main() { int *p = NULL; *p = 10; return 0; }`,
 			ExpectedState: "Runtime Error",
 		},
 		{
-			Name: "C_Runtime_Error_Div0",
+			Name: "C_Runtime_Error_Exit1",
 			SourceCode: `#include <stdio.h>
-int main() { volatile int b = 0; int a = 1 / b; printf("%d", a); return 0; }`,
+#include <stdlib.h>
+int main() { exit(1); return 0; }`,
 			ExpectedState: "Runtime Error",
 		},
 		{
