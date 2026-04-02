@@ -20,15 +20,16 @@ func NewUserRepository(db *sql.DB) *UserRepository {
 }
 
 // CreateUser inserts a new user into the database.
-func (r *UserRepository) CreateUser(email, passwordHash string) (*model.User, error) {
+func (r *UserRepository) CreateUser(name, email, passwordHash string) (*model.User, error) {
 	query := `
-		INSERT INTO users (email, password_hash)
-		VALUES ($1, $2)
-		RETURNING id, email, password_hash, created_at
+		INSERT INTO users (name, email, password_hash)
+		VALUES ($1, $2, $3)
+		RETURNING id, name, email, password_hash, created_at
 	`
 	user := &model.User{}
-	err := r.db.QueryRow(query, email, passwordHash).Scan(
+	err := r.db.QueryRow(query, name, email, passwordHash).Scan(
 		&user.ID,
+		&user.Name,
 		&user.Email,
 		&user.PasswordHash,
 		&user.CreatedAt,
@@ -46,13 +47,14 @@ func (r *UserRepository) CreateUser(email, passwordHash string) (*model.User, er
 // GetUserByEmail fetches a user record by email.
 func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
 	query := `
-		SELECT id, email, password_hash, created_at
+		SELECT id, name, email, password_hash, created_at
 		FROM users
 		WHERE email = $1
 	`
 	user := &model.User{}
 	err := r.db.QueryRow(query, email).Scan(
 		&user.ID,
+		&user.Name,
 		&user.Email,
 		&user.PasswordHash,
 		&user.CreatedAt,

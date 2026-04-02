@@ -17,6 +17,7 @@ func NewAuthHandler(svc *service.AuthService) *AuthHandler {
 }
 
 type signupRequest struct {
+	Name     string `json:"name"`
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -47,9 +48,9 @@ func (h *AuthHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := h.svc.Signup(req.Email, req.Password)
+	user, err := h.svc.Signup(req.Name, req.Email, req.Password)
 	if err != nil {
-		if errors.Is(err, service.ErrEmailTaken) || errors.Is(err, service.ErrInvalidEmail) || errors.Is(err, service.ErrPasswordTooShort) {
+		if errors.Is(err, service.ErrNameRequired) || errors.Is(err, service.ErrEmailTaken) || errors.Is(err, service.ErrInvalidEmail) || errors.Is(err, service.ErrPasswordTooShort) {
 			h.respondError(w, http.StatusBadRequest, err.Error())
 			return
 		}
@@ -62,6 +63,7 @@ func (h *AuthHandler) Signup(w http.ResponseWriter, r *http.Request) {
 		Message: "user created successfully",
 		Data: map[string]string{
 			"id":    user.ID,
+			"name":  user.Name,
 			"email": user.Email,
 		},
 	})

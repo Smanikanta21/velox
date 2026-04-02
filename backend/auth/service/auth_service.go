@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/mail"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -27,7 +28,10 @@ func NewAuthService(repo *repository.UserRepository) *AuthService {
 }
 
 // Signup validates input, hashes password, and persists the user.
-func (s *AuthService) Signup(email, password string) (*model.User, error) {
+func (s *AuthService) Signup(name, email, password string) (*model.User, error) {
+	if err := validateName(name); err != nil {
+		return nil, err
+	}
 	if err := validateEmail(email); err != nil {
 		return nil, err
 	}
@@ -40,7 +44,7 @@ func (s *AuthService) Signup(email, password string) (*model.User, error) {
 		return nil, fmt.Errorf("hashing password: %w", err)
 	}
 
-	user, err := s.repo.CreateUser(email, string(hash))
+	user, err := s.repo.CreateUser(name, email, string(hash))
 	if errors.Is(err, repository.ErrEmailExists) {
 		return nil, ErrEmailTaken
 	}
@@ -128,6 +132,13 @@ func jwtSecret() string {
 
 // --- Validation helpers ---
 
+func validateName(name string) error {
+	if strings.TrimSpace(name) == "" {
+		return ErrNameRequired
+	}
+	return nil
+}
+
 func validateEmail(email string) error {
 	if _, err := mail.ParseAddress(email); err != nil {
 		return ErrInvalidEmail
@@ -145,9 +156,10 @@ func validatePassword(password string) error {
 // --- Sentinel errors ---
 
 var (
-	ErrEmailTaken        = errors.New("email is already taken")
+	ErrNameRequired       = errors.New("name is required")
+	ErrEmailTaken         = errors.New("email is already taken")
 	ErrInvalidCredentials = errors.New("invalid email or password")
-	ErrInvalidEmail      = errors.New("invalid email format")
-	ErrPasswordTooShort  = fmt.Errorf("password must be at least %d characters", minPasswordLen)
-	ErrInvalidToken      = errors.New("invalid or expired token")
+	ErrInvalidEmail       = errors.New("invalid email format")
+	ErrPasswordTooShort   = fmt.Errorf("password must be at least %d characters", minPasswordLen)
+	ErrInvalidToken       = errors.New("invalid or expired token")
 )
