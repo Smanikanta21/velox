@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/rishik92/velox/auth/db"
 	"github.com/rishik92/velox/auth/handler"
+	"github.com/rishik92/velox/auth/middleware"
 	"github.com/rishik92/velox/auth/repository"
 	"github.com/rishik92/velox/auth/service"
 	"github.com/rishik92/velox/judge"
@@ -42,10 +43,19 @@ func main() {
 	svc := service.NewAuthService(repo)
 	authHandler := handler.NewAuthHandler(svc)
 
+	// Set up Dashboard Module
+	dashboardSvc := service.NewDashboardService(repo)
+	dashboardHandler := handler.NewDashboardHandler(dashboardSvc)
+
 	// Auth Routes
 	http.HandleFunc("/auth/signup", authHandler.Signup)
 	http.HandleFunc("/auth/login", authHandler.Login)
 	http.HandleFunc("/auth/logout", authHandler.Logout)
+
+	// Protected Dashboard Route
+	dashboardMux := http.NewServeMux()
+	dashboardMux.HandleFunc("/dashboard", dashboardHandler.GetData)
+	http.Handle("/dashboard", middleware.RequireAuth(dashboardMux))
 
 	// General API
 	http.HandleFunc("/submit", submitHandler)
@@ -53,7 +63,8 @@ func main() {
 	http.HandleFunc("/health", healthHandler)
 
 	fmt.Println("API Server running on :8080")
-	log.Fatal(http.ListenAndServe(":8080", corsMiddleware(http.DefaultServeMux)))
+	handler := middleware.SecurityHeaders(corsMiddleware(http.DefaultServeMux))
+	log.Fatal(http.ListenAndServe(":8080", handler))
 }
 
 func submitHandler(w http.ResponseWriter, r *http.Request) {

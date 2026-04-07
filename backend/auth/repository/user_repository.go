@@ -68,6 +68,30 @@ func (r *UserRepository) GetUserByEmail(email string) (*model.User, error) {
 	return user, nil
 }
 
+// GetUserByID fetches a user record by ID.
+func (r *UserRepository) GetUserByID(id string) (*model.User, error) {
+	query := `
+		SELECT id, name, email, password_hash, created_at
+		FROM users
+		WHERE id = $1
+	`
+	user := &model.User{}
+	err := r.db.QueryRow(query, id).Scan(
+		&user.ID,
+		&user.Name,
+		&user.Email,
+		&user.PasswordHash,
+		&user.CreatedAt,
+	)
+	if errors.Is(err, sql.ErrNoRows) {
+		return nil, ErrUserNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("get user by id: %w", err)
+	}
+	return user, nil
+}
+
 // isUniqueViolation checks if a postgres error is a unique constraint violation.
 func isUniqueViolation(err error) bool {
 	return err != nil && len(err.Error()) > 0 &&
