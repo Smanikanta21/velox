@@ -140,4 +140,62 @@ status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/submit" \
   -d '{"language": "python", "code": "print(42)"}')
 assert_status "$status" 401 "Invalid key rejection"
 
+# 9. List API Keys
+echo "--- Testing List API Keys ---"
+list_resp=$(curl -s -H "Authorization: Bearer $token" "$BASE_URL/auth/api-keys")
+key_id=$(echo "$list_resp" | jq -r '.[0].id')
+display_hint=$(echo "$list_resp" | jq -r '.[0].display_hint')
+
+if [ "$key_id" != "null" ] && [ -n "$key_id" ]; then
+    echo "PASS: List Keys (Found Key ID: $key_id, Hint: $display_hint)"
+else
+    echo "FAIL: List Keys"
+    echo "Response: $list_resp"
+    exit 1
+fi
+
+# 10. Update API Key Name
+echo "--- Testing Update API Key Name ---"
+update_status=$(curl -s -o /dev/null -w "%{http_code}" -X PATCH "$BASE_URL/auth/api-keys?id=$key_id" \
+  -H "Authorization: Bearer $token" \
+  -H "Content-Type: application/json" \
+  -d '{"name": "Renamed Key"}')
+assert_status "$update_status" 204 "Update Key Name"
+
+# 11. Verify Rename in List
+echo "--- Verifying Rename ---"
+list_resp=$(curl -s -H "Authorization: Bearer $token" "$BASE_URL/auth/api-keys")
+new_name=$(echo "$list_resp" | jq -r '.[0].name')
+if [ "$new_name" == "Renamed Key" ]; then
+    echo "PASS: Verify Rename"
+else
+    echo "FAIL: Verify Rename (Got: $new_name)"
+    exit 1
+fi
+
+# 12. Delete API Key
+echo "--- Testing Delete API Key ---"
+delete_status=$(curl -s -o /dev/null -w "%{http_code}" -X DELETE "$BASE_URL/auth/api-keys?id=$key_id" \
+  -H "Authorization: Bearer $token")
+assert_status "$delete_status" 204 "Delete API Key"
+
+# 13. Verify Deletion in List
+echo "--- Verifying Deletion ---"
+list_resp=$(curl -s -H "Authorization: Bearer $token" "$BASE_URL/auth/api-keys")
+remaining_keys=$(echo "$list_resp" | jq '. | length')
+if [ "$remaining_keys" -eq 0 ]; then
+    echo "PASS: Verify Deletion"
+else
+    echo "FAIL: Verify Deletion (Keys remaining: $remaining_keys)"
+    exit 1
+fi
+
+# 14. Verify Deleted Key Rejection
+echo "--- Testing Deleted Key Rejection ---"
+status=$(curl -s -o /dev/null -w "%{http_code}" -X POST "$BASE_URL/submit" \
+  -H "Authorization: Bearer $api_key" \
+  -H "Content-Type: application/json" \
+  -d '{"language": "python", "code": "print(42)"}')
+assert_status "$status" 401 "Deleted key rejection"
+
 echo "--- ALL TESTS PASSED ---"

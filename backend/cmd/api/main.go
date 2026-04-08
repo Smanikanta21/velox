@@ -82,9 +82,20 @@ func main() {
 	http.HandleFunc("/auth/logout", authHandler.Logout)
 
 	// API Key Management (Require Session Auth)
-	apiKeyMux := http.NewServeMux()
-	apiKeyMux.HandleFunc("/auth/api-keys", apiKeyHandler.GenerateKey)
-	http.Handle("/auth/api-keys", middleware.RequireAuth(apiKeyMux))
+	http.Handle("/auth/api-keys", middleware.RequireAuth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodPost:
+			apiKeyHandler.GenerateKey(w, r)
+		case http.MethodGet:
+			apiKeyHandler.ListKeys(w, r)
+		case http.MethodPatch:
+			apiKeyHandler.UpdateKey(w, r)
+		case http.MethodDelete:
+			apiKeyHandler.DeleteKey(w, r)
+		default:
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+		}
+	})))
 
 	// Protected Dashboard Route
 	dashboardMux := http.NewServeMux()

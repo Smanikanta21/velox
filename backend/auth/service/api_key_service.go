@@ -125,3 +125,21 @@ func (s *APIKeyService) ValidateKey(plaintextKey string) (*model.APIKey, error) 
 
 	return apiKey, nil
 }
+
+// ListKeys returns all API keys for a given user.
+func (s *APIKeyService) ListKeys(userID string) ([]*model.APIKey, error) {
+	return s.repo.ListKeysByUserID(userID)
+}
+
+// UpdateKeyName updates the name of an API key.
+func (s *APIKeyService) UpdateKeyName(id, userID, newName string) error {
+	if strings.TrimSpace(newName) == "" {
+		return fmt.Errorf("name cannot be empty")
+	}
+	return s.repo.UpdateKeyName(id, userID, newName)
+}
+
+// DeleteKey deletes an API key.
+func (s *APIKeyService) DeleteKey(id, userID string) error {
+	return s.repo.DeleteKey(id, userID)
+}

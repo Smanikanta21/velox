@@ -92,3 +92,81 @@ func (r *APIKeyRepository) UpdateLastUsed(id string) error {
 	_, err := r.db.Exec(query, time.Now(), id)
 	return err
 }
+
+// ListKeysByUserID returning all api keys for a given user.
+func (r *APIKeyRepository) ListKeysByUserID(userID string) ([]*model.APIKey, error) {
+	query := `
+		SELECT id, user_id, name, key_hash, display_hint, scopes, expires_at, last_used_at, created_at
+		FROM api_keys
+		WHERE user_id = $1
+		ORDER BY created_at DESC
+	`
+	rows, err := r.db.Query(query, userID)
+	if err != nil {
+		return nil, fmt.Errorf("list keys query: %w", err)
+	}
+	defer rows.Close()
+
+	var keys []*model.APIKey
+	for rows.Next() {
+		key := &model.APIKey{}
+		var scopesJSON []byte
+		err := rows.Scan(
+			&key.ID,
+			&key.UserID,
+			&key.Name,
+			&key.KeyHash,
+			&key.DisplayHint,
+			&scopesJSON,
+			&key.ExpiresAt,
+			&key.LastUsedAt,
+			&key.CreatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("scan key: %w", err)
+		}
+
+		if err := json.Unmarshal(scopesJSON, &key.Scopes); err != nil {
+			return nil, fmt.Errorf("unmarshal scopes: %w", err)
+		}
+		keys = append(keys, key)
+	}
+
+	return keys, nil
+}
+
+// UpdateKeyName updates the name of an API key if it belongs to the user.
+func (r *APIKeyRepository) UpdateKeyName(id, userID, newName string) error {
+	query := `UPDATE api_keys SET name = $1 WHERE id = $2 AND user_id = $3`
+	res, err := r.db.Exec(query, newName, id, userID)
+	if err != nil {
+		return fmt.Errorf("update key name: %w", err)
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return ErrKeyNotFound
+	}
+	return nil
+}
+
+// DeleteKey removes an API key from the database if it belongs to the user.
+func (r *APIKeyRepository) DeleteKey(id, userID string) error {
+	query := `DELETE FROM api_keys WHERE id = $1 AND user_id = $2`
+	res, err := r.db.Exec(query, id, userID)
+	if err != nil {
+		return fmt.Errorf("delete key: %w", err)
+	}
+
+	rows, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if rows == 0 {
+		return ErrKeyNotFound
+	}
+	return nil
+}

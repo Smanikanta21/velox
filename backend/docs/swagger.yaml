@@ -1,5 +1,34 @@
 basePath: /
 definitions:
+  handler.GenerateKeyRequest:
+    properties:
+      expires_at:
+        type: string
+      name:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+    type: object
+  handler.GenerateKeyResponse:
+    properties:
+      created_at:
+        type: string
+      display_hint:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      key:
+        type: string
+    type: object
+  handler.UpdateKeyRequest:
+    properties:
+      name:
+        type: string
+    type: object
   handler.errorResponse:
     properties:
       error:
@@ -89,6 +118,27 @@ definitions:
       time_ms:
         type: integer
     type: object
+  model.APIKey:
+    properties:
+      created_at:
+        type: string
+      display_hint:
+        type: string
+      expires_at:
+        type: string
+      id:
+        type: string
+      last_used_at:
+        type: string
+      name:
+        type: string
+      scopes:
+        items:
+          type: string
+        type: array
+      user_id:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -103,6 +153,130 @@ info:
   title: Velox API
   version: "1.0"
 paths:
+  /auth/api-keys:
+    delete:
+      description: Permanently revoke and delete an API key.
+      parameters:
+      - description: API Key UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: Key deleted
+        "400":
+          description: Missing ID
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - Bearer: []
+      summary: Delete API Key
+      tags:
+      - APIKeys
+    get:
+      description: Retrieve a list of all API keys created by the current user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of API keys
+          schema:
+            items:
+              $ref: '#/definitions/model.APIKey'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - Bearer: []
+      summary: List API Keys
+      tags:
+      - APIKeys
+    patch:
+      consumes:
+      - application/json
+      description: Rename an existing API key.
+      parameters:
+      - description: API Key UUID
+        in: query
+        name: id
+        required: true
+        type: string
+      - description: Update Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.UpdateKeyRequest'
+      responses:
+        "204":
+          description: Key updated
+        "400":
+          description: Missing ID or invalid JSON
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - Bearer: []
+      summary: Update API Key Name
+      tags:
+      - APIKeys
+    post:
+      consumes:
+      - application/json
+      description: Create a new API key with specific scopes and optional expiration.
+      parameters:
+      - description: API Key Generation Request
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/handler.GenerateKeyRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: API key created
+          schema:
+            $ref: '#/definitions/handler.GenerateKeyResponse'
+        "400":
+          description: Invalid request
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+        "500":
+          description: Internal server error
+          schema:
+            $ref: '#/definitions/handler.errorResponse'
+      security:
+      - Bearer: []
+      summary: Generate API Key
+      tags:
+      - APIKeys
   /auth/login:
     post:
       consumes:
