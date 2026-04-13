@@ -140,9 +140,13 @@ classDiagram
     class APIServer {
         <<entrypoint>> cmd/api
         +main()
-        +submitHandler()
-        +statusHandler()
         +healthHandler()
+    }
+
+    class JudgeHandler {
+        -APILogService apiLogSvc
+        +Submit(w, r)
+        +Status(w, r)
     }
 
     class WorkerProcess {
@@ -175,7 +179,8 @@ classDiagram
     SubmissionService --> ResultAggregator : uses
 
     %% System flow
-    APIServer ..> RedisClient : pushes to queue
+    APIServer --> JudgeHandler : routes to
+    JudgeHandler ..> RedisClient : pushes/pops queue
     WorkerProcess ..> RedisClient : pops from queue
     WorkerProcess ..> SubmissionService : calls
     SubmissionService ..> SubmissionRequest : consumes
@@ -210,6 +215,29 @@ classDiagram
         +time.Time CreatedAt
     }
 
+    class APILog {
+        +string ID
+        +string APIKeyID
+        +string SubmissionID
+        +string Endpoint
+        +string Method
+        +int StatusCode
+        +int DurationMs
+        +string OverallState
+        +string Language
+        +string ErrorMsg
+        +time.Time CreatedAt
+    }
+
+    class APIKeyStats {
+        +string APIKeyID
+        +int64 TotalRequests
+        +int64 PeakRPM
+        +int64 PeakRPD
+        +float64 SuccessRate
+        +map[string]int ErrorCounts
+    }
+
     class UserRepository {
         -sql.DB db
         +CreateUser(name, email, hash) User
@@ -219,6 +247,13 @@ classDiagram
 
     class APIKeyRepository {
         -sql.DB db
+    }
+
+    class APILogRepository {
+        -sql.DB db
+        +CreateLog(log) error
+        +UpdateLogResult(submissionID, overallState, errorMsg) error
+        +GetStats(apiKeyID) APIKeyStats
     }
 
     class AuthService {
@@ -236,6 +271,16 @@ classDiagram
         +ValidateKey(plaintext) APIKey
     }
 
+    class APILogService {
+        -APILogRepository repo
+        -chan logChan
+        +Log(entry)
+        -processLogs()
+        +UpdateResult(submissionID, overallState, errorMsg)
+        +GetStats(apiKeyID) APIKeyStats
+        +Shutdown()
+    }
+
     class AuthHandler {
         -AuthService svc
         +Signup(w, r)
@@ -250,10 +295,12 @@ classDiagram
 
     class APIKeyHandler {
         -APIKeyService svc
+        -APILogService logSvc
         +GenerateKey(w, r)
         +ListKeys(w, r)
         +UpdateKey(w, r)
         +DeleteKey(w, r)
+        +GetStats(w, r)
     }
 
     class APIKeyAuthMiddleware {
@@ -264,16 +311,20 @@ classDiagram
     %% Repository Pattern
     UserRepository --> User : produces
     APIKeyRepository --> APIKey : produces
+    APILogRepository --> APILog : produces
+    APILogRepository --> APIKeyStats : produces
 
     %% Service Layer Pattern
     AuthService --> UserRepository : uses
     DashboardService --> UserRepository : uses
     APIKeyService --> APIKeyRepository : uses
+    APILogService --> APILogRepository : uses
 
     %% Handler (Controller) Layer
     AuthHandler --> AuthService : uses
     DashboardHandler --> DashboardService : uses
     APIKeyHandler --> APIKeyService : uses
+    APIKeyHandler --> APILogService : uses
     APIKeyAuthMiddleware --> APIKeyService : uses
 ```
 

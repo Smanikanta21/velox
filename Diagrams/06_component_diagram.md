@@ -21,7 +21,7 @@ graph TB
                 A_BUILD["Build Stage: golang:latest<br/>CGO_ENABLED=0 GOOS=linux<br/>go build ./cmd/api"]
                 A_RUNTIME["Runtime: debian:bookworm-slim<br/>User: apiuser<br/>Binary: /app/main"]
                 A_PORT["Port 8080 internal<br/>→ 8080 host"]
-                A_ROUTES["Routes:<br/>POST /submit<br/>GET /status"]
+                A_ROUTES["Routes:<br/>POST /submit<br/>GET /status<br/>/auth/api-keys"]
             end
 
             subgraph "velox (Dockerfile.worker)"
@@ -187,7 +187,7 @@ graph TB
         end
 
         subgraph "PostgreSQL"
-            PG["Neon PostgreSQL<br/>Users + API Keys"]
+            PG["Neon PostgreSQL<br/>Users, API Keys, API Logs"]
         end
 
         subgraph "Redis Service (port 6379)"

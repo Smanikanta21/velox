@@ -42,6 +42,8 @@ flowchart LR
             UC16([Sign In])
             UC17([Sign Up])
             UC18([Search Documentation])
+            UC23([Manage API Keys])
+            UC24([View API Stats])
         end
 
         subgraph "Infrastructure"
@@ -59,6 +61,8 @@ flowchart LR
     User --> UC16
     User --> UC17
     User --> UC18
+    User --> UC23
+    User --> UC24
 
     UC1 --> UC3
     UC1 --> UC4
@@ -143,7 +147,21 @@ flowchart LR
 |-------|-------|
 | **Actor** | Admin / Developer |
 | **Tool** | `tests/load_test_cmd.go` |
-| **Behavior** | Sends 20 concurrent submissions per language (7 languages × 20 = 140 total), polls for results, and prints percentile-based performance metrics (P50, P90, P95, P99). |
+| **Behavior** | Sends 20 concurrent submissions per language, polls for results, and prints percentile metrics (P50, P90, P95, P99). |
+
+### UC23: Manage API Keys
+| Field | Value |
+|-------|-------|
+| **Actor** | User |
+| **Trigger** | POST/GET/PATCH/DELETE `/auth/api-keys` |
+| **Description** | Generate, list, rename, and revoke API keys used for authentication. |
+
+### UC24: View API Stats
+| Field | Value |
+|-------|-------|
+| **Actor** | User |
+| **Trigger** | GET `/auth/api-keys/stats` |
+| **Description** | View usage metrics (Total, RPM, RPD, Success Rate) for an API key. |
 
 ### UC22: Run CI Tests
 | Field | Value |

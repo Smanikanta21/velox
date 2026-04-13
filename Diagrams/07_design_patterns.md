@@ -157,6 +157,7 @@ Encapsulates all SQL queries behind a repository struct. The service layer never
 |------------|-------|-----------|
 | `UserRepository` | `users` | `CreateUser()`, `GetUserByEmail()`, `GetUserByID()` |
 | `APIKeyRepository` | `api_keys` | Key CRUD operations |
+| `APILogRepository` | `api_logs` | Write logs, fetch stats |
 
 ### Sentinel Errors
 
@@ -187,6 +188,7 @@ All business logic lives in the service layer — password hashing, JWT generati
 | `AuthService` | Signup (hash + persist), Login (verify + JWT), Input validation |
 | `DashboardService` | Dashboard data aggregation |
 | `APIKeyService` | Key generation, validation (CSPRNG hash), scope checking |
+| `APILogService` | Async queueing of API logs and calculating usage stats |
 
 ### Example
 

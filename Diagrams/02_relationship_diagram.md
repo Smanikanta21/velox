@@ -60,6 +60,10 @@ classDiagram
         <<package: cmd/api>>
     }
 
+    class AuthPkg {
+        <<package: auth>>
+    }
+
     class WorkerProcess {
         <<package: cmd/worker>>
     }
@@ -70,6 +74,7 @@ classDiagram
 
     APIServer ..> SubmissionRequest : deserializes from JSON
     APIServer ..> RedisClient : pushes SubmissionRequest JSON
+    APIServer ..> AuthPkg : uses for auth/logging
 
     WorkerProcess ..> RedisClient : pops SubmissionRequest JSON
     WorkerProcess ..> SubmissionRequest : deserializes
@@ -143,8 +148,9 @@ graph TD
 
 | Package | Depends On | Why |
 |---------|-----------|-----|
-| `cmd/api` | `judge`, `shared/redis`, `uuid`, `net/http`, `encoding/json` | The API server needs the data models (`judge`), the Redis wrapper to push/pop, UUID generation, and the HTTP server. |
-| `cmd/worker` | `judge`, `processSubmission`, `shared/redis`, `encoding/json` | The worker deserializes submissions, processes them, and pushes results. |
+| `cmd/api` | `auth`, `judge`, `shared/redis`, `uuid`, `net/http` | The API server routes requests, delegates auth and logging, and pushes jobs. |
+| `auth` | `database/sql`, `bcrypt`, `jwt` | Manages users, API keys, authentication, and async API logging to PostgreSQL. |
+| `cmd/worker` | `judge`, `processSubmission`, `shared/redis` | The worker deserializes submissions, processes them, and pushes results. |
 | `processSubmission` | `judge`, `runBatch`, `os/exec` | The orchestrator needs data models, the batch runner, and `os/exec` to compile code. |
 | `runBatch` | `judge`, `syscall` | The execution engine needs data models and `syscall.Rusage` for memory measurement. |
 | `shared/redis` | `go-redis/v9` | Thin wrapper around the Redis client library. |

@@ -13,7 +13,9 @@ sequenceDiagram
     autonumber
     participant Client as Client (Browser / curl)
     participant API as API Server<br/>cmd/api/main.go
+    participant AuthMW as APIKey Auth
     participant Redis as Redis
+    participant LogSvc as APILogService
     participant Worker as Worker<br/>cmd/worker/main.go
     participant PS as processSubmission<br/>.ProcessSubmission()
     participant Compiler as g++ (Compiler)
@@ -23,10 +25,13 @@ sequenceDiagram
     Note over Client,Binary: ── PHASE 1: SUBMISSION ──
 
     Client->>+API: POST /submit<br/>{ language: "cpp", source_code: "...", test_cases: [...] }
+    API->>AuthMW: Validate Bearer Token
+    AuthMW-->>API: Proceed (APIKeyID injected)
     API->>API: Validate request<br/>(TimeLimitMs ≤ 5000, MemoryLimitKb ≤ 512000)
     API->>API: Generate UUID<br/>req.SubmissionID = uuid.New()
     API->>Redis: LPUSH "submissions" <serialized JSON>
     Redis-->>API: OK
+    API-)LogSvc: Async Log(State: Pending)
     API-->>-Client: 202 Accepted<br/>{ "submission_id": "abc-123" }
 
     Note over Client,Binary: ── PHASE 2: PROCESSING ──
@@ -66,6 +71,8 @@ sequenceDiagram
     Client->>+API: GET /status?submission_id=abc-123
     API->>+Redis: BRPOP "results:abc-123" 1s
     Redis-->>-API: <serialized JSON>
+    API-)LogSvc: UpdateResult(State: Accepted)
+    API-)LogSvc: Async Log(/status request)
     API-->>-Client: 200 OK<br/>{ "submission_id": "abc-123", "overall_state": "Accepted", "results": [...] }
 ```
 

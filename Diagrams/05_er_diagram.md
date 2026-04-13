@@ -45,11 +45,34 @@ erDiagram
         string operation "LPUSH to add | BRPOP to consume"
     }
 
+    USERS {
+        string id PK "UUID"
+        string email "Unique"
+        string password_hash "bcrypt"
+    }
+
+    API_KEYS {
+        string id PK "UUID"
+        string user_id FK "References USERS.id"
+        string key_hash "CSPRNG hash"
+        string scopes "e.g., submit, status"
+    }
+
+    API_LOGS {
+        string id PK "UUID"
+        string api_key_id FK "References API_KEYS.id"
+        string submission_id "Optional UUID"
+        string endpoint "/submit or /status"
+        string overall_state "Pending / Accepted / etc."
+    }
+
     SUBMISSION_REQUEST ||--|{ TEST_CASE : "has 1..20"
     SUBMISSION_RESPONSE ||--|{ TEST_CASE_RESULT : "has 0..*"
     SUBMISSION_REQUEST ||--|| SUBMISSION_RESPONSE : "produces"
     SUBMISSION_REQUEST }|--|| REDIS_QUEUE : "queued in 'submissions'"
     SUBMISSION_RESPONSE }|--|| REDIS_QUEUE : "stored in 'results:<id>'"
+    USERS ||--|{ API_KEYS : "owns"
+    API_KEYS ||--|{ API_LOGS : "tracks"
 ```
 
 ---
