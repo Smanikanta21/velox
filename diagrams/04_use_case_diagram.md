@@ -57,19 +57,19 @@ flowchart LR
     User --> UC13
 
     style User fill:#ff5a00,color:#fff,stroke:#333
-    style UC1 fill:#e0f2fe,stroke:#0284c7
-    style UC2 fill:#e0f2fe,stroke:#0284c7
-    style UC3 fill:#e0f2fe,stroke:#0284c7
-    style UC4 fill:#fef3c7,stroke:#d97706
-    style UC5 fill:#fef3c7,stroke:#d97706
-    style UC6 fill:#fef3c7,stroke:#d97706
-    style UC7 fill:#fef3c7,stroke:#d97706
-    style UC8 fill:#dcfce7,stroke:#16a34a
-    style UC9 fill:#dcfce7,stroke:#16a34a
-    style UC10 fill:#fce7f3,stroke:#db2777
-    style UC11 fill:#fce7f3,stroke:#db2777
-    style UC12 fill:#fce7f3,stroke:#db2777
-    style UC13 fill:#f3e8ff,stroke:#9333ea
+    style UC1 fill:#e0f2fe,color:#000,stroke:#000000
+    style UC2 fill:#e0f2fe,color:#000,stroke:#000000
+    style UC3 fill:#e0f2fe,color:#000,stroke:#000000
+    style UC4 fill:#fef3c7,color:#000,stroke:#000000
+    style UC5 fill:#fef3c7,color:#000,stroke:#000000
+    style UC6 fill:#fef3c7,color:#000,stroke:#000000
+    style UC7 fill:#fef3c7,color:#000,stroke:#000000
+    style UC8 fill:#dcfce7,color:#000,stroke:#000000
+    style UC9 fill:#dcfce7,color:#000,stroke:#000000
+    style UC10 fill:#fce7f3,color:#000,stroke:#000000
+    style UC11 fill:#fce7f3,color:#000,stroke:#000000
+    style UC12 fill:#fce7f3,color:#000,stroke:#000000
+    style UC13 fill:#f3e8ff,color:#000,stroke:#000000
 ```
 
 ---
@@ -99,22 +99,22 @@ flowchart TB
     R1 -->|"timeout"| R3([Return Pending Status])
     UC9 -->|"«include»"| V4
 
-    style UC8 fill:#dcfce7,stroke:#16a34a
-    style UC9 fill:#dcfce7,stroke:#16a34a
-    style V1 fill:#f1f5f9,stroke:#64748b
-    style V2 fill:#f1f5f9,stroke:#64748b
-    style V3 fill:#f1f5f9,stroke:#64748b
-    style V4 fill:#f1f5f9,stroke:#64748b
-    style W1 fill:#fef9c3,stroke:#ca8a04
-    style W2 fill:#fef9c3,stroke:#ca8a04
-    style W3 fill:#fef9c3,stroke:#ca8a04
-    style W4 fill:#fef9c3,stroke:#ca8a04
-    style W5 fill:#fef9c3,stroke:#ca8a04
-    style W6 fill:#fef9c3,stroke:#ca8a04
-    style W7 fill:#fef9c3,stroke:#ca8a04
-    style R1 fill:#f1f5f9,stroke:#64748b
-    style R2 fill:#f1f5f9,stroke:#64748b
-    style R3 fill:#f1f5f9,stroke:#64748b
+    style UC8 fill:#dcfce7,color:#000,stroke:#16a34a
+    style UC9 fill:#dcfce7,color:#000,stroke:#16a34a
+    style V1 fill:#f1f5f9,color:#000,stroke:#64748b
+    style V2 fill:#f1f5f9,color:#000,stroke:#64748b
+    style V3 fill:#f1f5f9,color:#000,stroke:#64748b
+    style V4 fill:#f1f5f9,color:#000,stroke:#64748b
+    style W1 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W2 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W3 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W4 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W5 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W6 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style W7 fill:#fef9c3,color:#000,stroke:#ca8a04
+    style R1 fill:#f1f5f9,color:#000,stroke:#64748b
+    style R2 fill:#f1f5f9,color:#000,stroke:#64748b
+    style R3 fill:#f1f5f9,color:#000,stroke:#64748b
 ```
 
 ---
@@ -254,7 +254,7 @@ graph LR
     style Java fill:#f89820,color:#000
     style TS fill:#3178c6,color:#fff
     style CS fill:#68217a,color:#fff
-    style Python fill:#3776ab,color:#fff
-    style Node fill:#339933,color:#fff
+    style Python fill:#3776ab,color:#000
+    style Node fill:#339933,color:#000
     style RB fill:#ff5a00,color:#fff
 ```
