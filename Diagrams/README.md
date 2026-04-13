@@ -56,7 +56,6 @@ For a complete reference of all design patterns used in Velox, see [07_design_pa
 | Adapter | `DefaultRunner`, `LocalTempStorageAdapter` |
 | Repository | `auth/repository/` — Data access layer |
 | Producer-Consumer | API → Redis → Worker |
-| Middleware Chain | `auth/middleware/` — JWT, API Key, Security Headers |
 
 ---
 
