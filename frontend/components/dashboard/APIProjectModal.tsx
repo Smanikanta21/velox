@@ -26,6 +26,13 @@ export default function APIProjectModal({ isOpen, onClose, apiKey, stats, onUpda
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const handleCopy = (text: string, id: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
 
   if (!isOpen) return null;
 
@@ -147,12 +154,30 @@ export default function APIProjectModal({ isOpen, onClose, apiKey, stats, onUpda
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-                 <div className="bg-black/50 p-4 rounded-xl border border-white/5">
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-2">Display Hint</p>
+                 <div className="bg-black/50 p-4 rounded-xl border border-white/5 group">
+                    <div className="flex justify-between items-start mb-2">
+                        <p className="text-white/40 text-xs font-bold uppercase tracking-wider">Display Hint</p>
+                        <button onClick={() => handleCopy(apiKey.preview, 'preview')} className="text-white/40 hover:text-white transition-colors" title="Copy Hint">
+                            {copiedId === 'preview' ? (
+                                <svg className="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                            ) : (
+                                <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            )}
+                        </button>
+                    </div>
                     <p className="text-sm font-mono text-white/80">{apiKey.preview}</p>
                  </div>
-                 <div className="bg-black/50 p-4 rounded-xl border border-white/5">
-                    <p className="text-white/40 text-xs font-bold uppercase tracking-wider mb-2">Key ID</p>
+                 <div className="bg-black/50 p-4 rounded-xl border border-white/5 group">
+                    <div className="flex justify-between items-start mb-2">
+                        <p className="text-white/40 text-xs font-bold uppercase tracking-wider">Key ID</p>
+                        <button onClick={() => handleCopy(apiKey.id, 'id')} className="text-white/40 hover:text-white transition-colors" title="Copy Key ID">
+                            {copiedId === 'id' ? (
+                                <svg className="w-4 h-4 text-success" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" /></svg>
+                            ) : (
+                                <svg className="w-4 h-4 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            )}
+                        </button>
+                    </div>
                     <p className="text-sm font-mono text-white/80 truncate" title={apiKey.id}>{apiKey.id}</p>
                  </div>
             </div>
