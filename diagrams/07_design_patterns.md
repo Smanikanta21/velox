@@ -398,9 +398,9 @@ graph TB
     Repository --> ServiceLayer
     DomainModel --> ProducerConsumer
 
-    style Strategy fill:#ff5a00,color:#fff
-    style Repository fill:#2563eb,color:#fff
-    style ProducerConsumer fill:#16a34a,color:#fff
-    style Singleton fill:#dc2626,color:#fff
-    style Chain fill:#7c3aed,color:#fff
+    style Strategy fill:#ff5a00,color:#000
+    style Repository fill:#2563eb,color:#000
+    style ProducerConsumer fill:#16a34a,color:#000
+    style Singleton fill:#dc2626,color:#000
+    style Chain fill:#7c3aed,color:#000
 ```
