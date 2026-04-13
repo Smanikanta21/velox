@@ -1,36 +1,40 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
-import LogoutButton from '@/components/dashboard/LogoutButton';
-import api from '@/lib/api';
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import LogoutButton from "@/components/dashboard/LogoutButton";
+import api from "@/lib/api";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [profile, setProfile] = useState<{name: string, email: string} | null>(null);
+  const [profile, setProfile] = useState<{
+    name: string;
+    email: string;
+  } | null>(null);
 
   useEffect(() => {
     // Gateway Auth Check
-    const token = localStorage.getItem('velox_token');
+    const token = localStorage.getItem("velox_token");
     if (!token) {
-      window.location.href = '/';
+      window.location.href = "/";
       return;
     }
 
     // Fetch profile data from backend to hydrate the top-right header
-    api.get('/dashboard')
-      .then(res => {
+    api
+      .get("/dashboard")
+      .then((res) => {
         if (res.data) {
           setProfile({
-            name: res.data.user_name || 'User',
-            email: res.data.user_email || ''
+            name: res.data.user_name || "User",
+            email: res.data.user_email || "",
           });
         }
       })
-      .catch(err => {
+      .catch((err) => {
         console.error("Failed to fetch dashboard header data:", err);
       });
   }, []);
@@ -38,41 +42,83 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="h-20 border-b border-white/5 bg-surface/50 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-20">
-        <Link href="/" className="text-2xl font-black text-white hover:text-primary transition-colors flex items-center gap-2">
+        <Link
+          href="/"
+          className="text-2xl font-black text-white hover:text-primary transition-colors flex items-center gap-2"
+        >
           <div className="w-8 h-8 rounded-lg bg-surface border border-white/10 flex flex-col gap-[2px] items-center justify-center relative overflow-hidden shadow-sm">
-             <div className="absolute inset-0 bg-primary/20 animate-pulse"></div>
-             <div className="flex gap-[3px]">
-               <div className="w-[3px] h-[12px] bg-primary rounded-full transform -skew-x-12"></div>
-               <div className="w-[3px] h-[12px] bg-white rounded-full transform -skew-x-12"></div>
-             </div>
+            <div className="absolute inset-0 bg-primary/20 animate-pulse"></div>
+            <div className="flex gap-[3px]">
+              <div className="w-[3px] h-[12px] bg-primary rounded-full transform -skew-x-12"></div>
+              <div className="w-[3px] h-[12px] bg-white rounded-full transform -skew-x-12"></div>
+            </div>
           </div>
           Velox
         </Link>
-        
+
         <div className="flex items-center gap-6">
-          <Link href="/dashboard/docs" className="text-sm font-bold text-white/50 hover:text-white transition-colors tracking-wide hidden md:flex items-center gap-1.5">
-             <svg className="w-4 h-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-             </svg>
-             Documentation
-          </Link>
-        
-          <button className="px-5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary hover:text-primary-hover font-bold text-sm rounded-lg transition-all shadow-[0_0_15px_rgba(255,90,0,0.2)] hover:shadow-[0_0_25px_rgba(255,90,0,0.4)] flex items-center gap-2 cursor-pointer">
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <Link
+            href="/dashboard/docs"
+            className="text-sm font-bold text-white/50 hover:text-white transition-colors tracking-wide hidden md:flex items-center gap-1.5"
+          >
+            <svg
+              className="w-4 h-4 opacity-50"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              />
             </svg>
-            Open Sandbox
-          </button>
-          
+            Documentation
+          </Link>
+
+          <Link
+            href="/dashboard/playground"
+            className="px-5 py-2.5 bg-primary/10 hover:bg-primary/20 border border-primary/30 text-primary hover:text-primary-hover font-bold text-sm rounded-lg transition-all shadow-[0_0_15px_rgba(255,90,0,0.2)] hover:shadow-[0_0_25px_rgba(255,90,0,0.4)] flex items-center gap-2 cursor-pointer"
+          >
+            <svg
+              className="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth="2.5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
+              />
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            Open Playground
+          </Link>
+
           <div className="w-px h-6 bg-white/10"></div>
-          
-          <Link href="/dashboard/profile" className="flex items-center gap-3 cursor-pointer group">
+
+          <Link
+            href="/dashboard/profile"
+            className="flex items-center gap-3 cursor-pointer group"
+          >
             <div className="flex flex-col text-right hidden sm:flex">
-                <span className="text-sm font-bold text-white">{profile?.name || '...'}</span>
+              <span className="text-sm font-bold text-white">
+                {profile?.name || "..."}
+              </span>
             </div>
             <div className="w-10 h-10 rounded-full bg-white/10 border border-white/20 flex items-center justify-center text-sm font-bold text-white group-hover:border-primary/50 transition-colors shadow-sm overflow-hidden relative">
-              <img src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile?.name || 'User'}&backgroundColor=000000&textColor=ffffff`} alt="Avatar" className="w-full h-full object-cover" />
+              <img
+                src={`https://api.dicebear.com/7.x/initials/svg?seed=${profile?.name || "User"}&backgroundColor=000000&textColor=ffffff`}
+                alt="Avatar"
+                className="w-full h-full object-cover"
+              />
             </div>
           </Link>
           <LogoutButton />
@@ -80,9 +126,7 @@ export default function DashboardLayout({
       </header>
 
       <main className="flex-1 p-8 overflow-y-auto w-full">
-        <div className="max-w-7xl mx-auto space-y-8">
-          {children}
-        </div>
+        <div className="max-w-7xl mx-auto space-y-8">{children}</div>
       </main>
     </div>
   );
