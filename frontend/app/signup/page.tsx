@@ -84,9 +84,9 @@ export default function SignupPage() {
         <div className="bg-surface/80 backdrop-blur-xl py-10 px-6 shadow-[0_20px_60px_-15px_rgba(0,0,0,1)] border border-white/10 sm:rounded-2xl sm:px-10">
           {/* OAuth Buttons */}
           <div>
-            <button className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-white/10 border border-white/10 text-white font-semibold py-2.5 px-4 rounded-xl transition-all">
+            <button disabled className="w-full flex items-center justify-center gap-3 bg-white/5 border border-white/5 text-white/30 font-semibold py-2.5 px-4 rounded-xl cursor-not-allowed">
               <svg
-                className="h-5 w-5"
+                className="h-5 w-5 opacity-50"
                 fill="currentColor"
                 viewBox="0 0 24 24"
                 aria-hidden="true"
@@ -97,7 +97,7 @@ export default function SignupPage() {
                   clipRule="evenodd"
                 />
               </svg>
-              Continue with GitHub
+              GitHub OAuth (Coming Soon)
             </button>
           </div>
 
@@ -144,7 +144,7 @@ export default function SignupPage() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   className="block w-full rounded-xl border-0 bg-white/5 py-2.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 px-4 transition-all"
-                  placeholder="John Doe"
+                  placeholder="Full Name"
                 />
               </div>
             </div>
@@ -185,6 +185,7 @@ export default function SignupPage() {
                   type={showPassword ? "text" : "password"}
                   required
                   value={password}
+                  placeholder="Password"
                   onChange={(e) => setPassword(e.target.value)}
                   className="block w-full rounded-xl border-0 bg-white/5 py-2.5 text-white shadow-sm ring-1 ring-inset ring-white/10 focus:ring-2 focus:ring-inset focus:ring-primary sm:text-sm sm:leading-6 pl-4 pr-10 transition-all"
                 />
